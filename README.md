@@ -15,7 +15,7 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```
 cd existing_repo
-git remote add origin https://gitlab.com/salis21n-tools/automate-create-task-jira.git
+git remote add origin https://github.com/salis21n/automate-create-task-jira.git
 git branch -M main
 git push -uf origin main
 ```
