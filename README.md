@@ -13,8 +13,6 @@ git branch -M main
 git push -uf origin main
 ```
 
-Berikut adalah dokumentasi lengkap dalam format **Markdown** untuk kode Python yang Anda berikan, termasuk panduan untuk **deploy di Docker** menggunakan Dockerfile dan menjalankan dengan `docker run --rm`.
-
 ---
 
 # Dokumentasi Batch Jira Task Creator
