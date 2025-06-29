@@ -3,13 +3,29 @@ import requests
 from requests.auth import HTTPBasicAuth
 from datetime import datetime
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 # ========= CONFIGURASI ==============
-JIRA_URL = "https://your_url_jira.atlassian.net"  # URL Jira Anda
-EMAIL = "your_jira_email_here"  # Email login Jira Anda
-API_TOKEN = "your_jira_api_token_here"  # API Token Jira Anda
-FALLBACK_ACCOUNT_ID = "your_jira_account_id_here"
-START_DATE_CUSTOM_FIELD = "customfield_xxxxx"  # Ganti dengan ID custom field Start Date
-TRANSITION_ID_DONE = "xxx"  # Ganti dengan ID transisi ke Done
+JIRA_URL = os.getenv('JIRA_URL')  # URL Jira Anda
+EMAIL = os.getenv('EMAIL')  # Email login Jira Anda
+API_TOKEN = os.getenv('API_TOKEN')  # API Token Jira Anda
+FALLBACK_ACCOUNT_ID = os.getenv('FALLBACK_ACCOUNT_ID')
+START_DATE_CUSTOM_FIELD = os.getenv('START_DATE_CUSTOM_FIELD')  # Ganti dengan ID custom field Start Date
+TRANSITION_ID_DONE = os.getenv('TRANSITION_ID_DONE')  # Ganti dengan ID transisi ke Done
+
+# Validate required environment variables
+for var_name, var_value in [
+    ('JIRA_URL', JIRA_URL),
+    ('EMAIL', EMAIL),
+    ('API_TOKEN', API_TOKEN),
+    ('FALLBACK_ACCOUNT_ID', FALLBACK_ACCOUNT_ID),
+    ('START_DATE_CUSTOM_FIELD', START_DATE_CUSTOM_FIELD),
+    ('TRANSITION_ID_DONE', TRANSITION_ID_DONE)
+]:
+    if not var_value:
+        raise ValueError(f"Missing required environment variable: {var_name}")
 
 auth = HTTPBasicAuth(EMAIL, API_TOKEN)
 headers = {
