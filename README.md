@@ -1,8 +1,6 @@
-# automate-create-task-jira
+# Jira Batch Task Creator
 
-
-
-## Getting started
+## Getting Started
 
 ## Add your files
 
@@ -15,52 +13,52 @@ git push -uf origin main
 
 ---
 
-# Dokumentasi Batch Jira Task Creator
+# Jira Batch Task Creator Documentation
 
-## Deskripsi
+## Description
 
-Script Python ini digunakan untuk membuat tugas (task) Jira secara batch berdasarkan data dari file CSV. Script ini mendukung fitur-fitur:
+This Python script creates Jira tasks in bulk based on data from a CSV file. Features include:
 
-- Membaca data task dari file CSV.
-- Mendapatkan tipe isu (issue type) "Task" di tiap project.
-- Mendapatkan ID custom field Jira dinamically (misal: Epic Link).
-- Mendapatkan `accountId` user berdasarkan email, dengan fallback jika tidak ditemukan.
-- Membuat tugas dengan payload yang sesuai, termasuk deskripsi dalam format Atlassian Document Format (ADF).
-- Mengisi tanggal mulai (`start date`) dan tanggal selesai (`due date`) pada custom field.
-- Melakukan transisi status tugas ke "Done" secara otomatis dengan transition ID yang diberikan.
+- Reads task data from CSV files.
+- Dynamically retrieves "Task" issue types for each project.
+- Automatically fetches custom field IDs (e.g., Epic Link).
+- Retrieves user `accountId` from email with fallback capability.
+- Creates tasks with proper payloads including Atlassian Document Format (ADF) descriptions.
+- Populates start date (via custom field) and due date.
+- Automatically transitions tasks to "Done" status using provided transition ID.
 
 ---
 
-## Persiapan
+## Prerequisites
 
-1. **File CSV**  
-   File CSV harus memiliki kolom yang minimal meliputi:  
-   - `project-key` (misal: SYS)  
-   - `title-task` (judul tugas)  
-   - `desc-task` (deskripsi tugas)  
-   - `due-date` (tanggal selesai, format `YYYY-MM-DD`)  
-   - `epic-code` (kode Epic jika ada, bisa dikosongkan)  
-   - `assign` (email assignee)
+1. **CSV File Requirements**
+   The CSV must contain these minimum columns:
+   - `project-key` (e.g., SYS)
+   - `title-task` (task title)
+   - `desc-task` (task description)
+   - `due-date` (due date in `YYYY-MM-DD` format)
+   - `epic-code` (epic code if applicable, can be empty)
+   - `assign` (assignee's email)
 
-2. **Konfigurasi**  
-   Variabel konfigurasi pada script perlu diubah sesuai dengan Jira instance dan akun Anda:
+2. **Configuration**
+   Update the script's configuration variables to match your Jira instance:
    ```python
-   JIRA_URL = "https://your_url_jira.atlassian.net"  # URL Jira Anda
-   EMAIL = "your_jira_email_here"  # Email login Jira Anda
-   API_TOKEN = "your_jira_api_token_here"  # API Token Jira Anda
+   JIRA_URL = "https://your_url_jira.atlassian.net"  # Your Jira URL
+   EMAIL = "your_jira_email_here"  # Your Jira login email
+   API_TOKEN = "your_jira_api_token_here"  # Your Jira API token
    FALLBACK_ACCOUNT_ID = "your_jira_account_id_here"
-   START_DATE_CUSTOM_FIELD = "customfield_xxxxx"  # Ganti dengan ID custom field Start Date
-   TRANSITION_ID_DONE = "xxx"  # Ganti dengan ID transisi ke Done
+   START_DATE_CUSTOM_FIELD = "customfield_xxxxx"  # ID for Start Date custom field
+   TRANSITION_ID_DONE = "xxx"  # Transition ID to "Done" status
    ```
 
 ---
 
-## Cara Kerja Script
+## Script Workflow
 
-- Script akan mengelompokkan task berdasarkan `due-date` sehingga dapat memproses batch task per tanggal tertentu.
-- Setiap task dibuat dengan mengisi field summary, description, assignee, due date, start date, dan epic link (jika ada).
-- Jika lookup email assignee gagal menemukan accountId, akan menggunakan fallback accountId.
-- Setelah task berhasil dibuat, script akan otomatis melakukan transisi status task ke "Done" menggunakan API Jira.
+- Groups tasks by `due-date` to process batches per date.
+- Each task is created with populated fields: summary, description, assignee, due date, start date, and epic link (if provided).
+- Falls back to `FALLBACK_ACCOUNT_ID` if email lookup fails.
+- Automatically transitions tasks to "Done" using Jira's API after creation.
 
 ---
 
@@ -68,8 +66,7 @@ Script Python ini digunakan untuk membuat tugas (task) Jira secara batch berdasa
 
 ### Dockerfile
 
-Buat file bernama `Dockerfile` dengan isi berikut:
-
+Create a `Dockerfile` with:
 ```Dockerfile
 FROM python:alpine
 
@@ -80,46 +77,39 @@ COPY . .
 RUN pip install pandas requests openpyxl
 
 CMD ["sh", "-c", "python your_script_name.py data.csv"]
-
 ```
 
-> **Catatan:** Ganti `your_script_name.py` dengan nama file Python script Anda.
+> **Note:** Replace `your_script_name.py` with your actual Python script filename.
 
 ---
 
-### Menjalankan Docker Container
+### Running the Docker Container
 
-1. **Build image Docker:**
-
+1. **Build the Docker image:**
 ```sh
 docker build -t jira-batch-task-creator .
 ```
 
-2. **Jalankan container dengan file CSV di-mount dari host agar bisa diakses script:**
-
+2. **Run the container with CSV file mounted from host:**
 ```sh
-docker run --rm -v /path/ke/folder/csv:/app jira-batch-task-creator
+docker run --rm -v /path/to/csv/folder:/app jira-batch-task-creator
 ```
-
-Gantilah `/path/ke/folder/csv` dengan path folder aktual di komputer Anda yang berisi file `data.csv`.
+Replace `/path/to/csv/folder` with your actual CSV file directory path.
 
 ---
 
-## Contoh Pemanggilan Script
-
-Jika ingin menjalankan secara langsung (tanpa Docker):
+## Direct Execution (Without Docker)
 
 ```bash
 python your_script_name.py
 ```
-
-Script akan otomatis membaca file `data.csv` di direktorinya.
+The script will automatically read `data.csv` from the current directory.
 
 ---
 
-## Hal yang Perlu Diperhatikan
+## Important Notes
 
-- Pastikan API token sudah benar dan memiliki izin akses yang cukup di Jira.
-- Jika tidak mendapatkan `accountId` dari email, pastikan email sudah terdaftar di Jira dan dapat diakses oleh API.
-- Transition ID "41" harus valid di workflow Jira project Anda untuk transisi ke status "Done".
-- CSV harus berformat benar dan kolom konsisten.
+- Ensure your API token has sufficient permissions in Jira.
+- Verify email assignments exist in Jira and are accessible via API.
+- The `TRANSITION_ID_DONE` must match your project's workflow "Done" transition.
+- CSV formatting and column consistency are critical for successful execution.
